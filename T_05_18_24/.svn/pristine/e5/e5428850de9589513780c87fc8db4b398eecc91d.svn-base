@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="build/src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/aether-api-1.11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/aether-impl-1.11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/aether-spi-1.11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/aether-util-1.11.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/ant-1.8.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/ant-launcher-1.8.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/antlr-2.7.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/asm-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/asm-commons-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/asm-tree-3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/commons-configuration-1.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/commons-pool-1.5.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/dap-framework-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/db-ojb-1.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/dml-1.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/dml-fenix-1.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/dml-maven-plugin-1.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/fenix-framework-core-1.0.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/jboss-jaxr-api_1.0_spec-1.0.1.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/jcl-over-slf4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/jfreechart-0.9.18.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/jmockit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/joda-time-1.5.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/juddi-client-3.1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/junit-4.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/jvstm-fenix-1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/log4j-1.2.8.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-aether-provider-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-artifact-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-core-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-model-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-model-builder-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-plugin-api-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-repository-metadata-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-settings-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/maven-settings-builder-3.0.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/mysql-connector-java-5.1.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/plexus-cipher-1.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/plexus-classworlds-2.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/plexus-component-annotations-1.5.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/plexus-interpolation-1.14.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/plexus-sec-dispatcher-1.3.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/plexus-utils-2.0.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/scout-1.2.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/sisu-guice-2.9.4-no_aop.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/sisu-inject-bean-2.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/sisu-inject-plexus-2.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/slf4j-nop-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/João Brás/workspace/lib/uddi-ws-3.1.3.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>

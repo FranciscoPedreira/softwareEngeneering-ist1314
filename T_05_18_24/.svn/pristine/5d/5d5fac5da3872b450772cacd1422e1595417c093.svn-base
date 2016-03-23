@@ -1,0 +1,386 @@
+package chequerefeicao.ws;
+
+import java.security.NoSuchAlgorithmException;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.TreeMap;
+
+import javax.jws.WebService;
+
+import com.mysql.jdbc.Connection;
+import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.Statement;
+
+import pt.chequerefeicao.ws.ChequeInexistente;
+import pt.chequerefeicao.ws.ChequeInexistente_Exception;
+import pt.chequerefeicao.ws.ChequeJaUsado;
+import pt.chequerefeicao.ws.ChequeJaUsado_Exception;
+import pt.chequerefeicao.ws.ChequeNaoEndossavel;
+import pt.chequerefeicao.ws.ChequeNaoEndossavel_Exception;
+import pt.chequerefeicao.ws.ChequeRefeicaoPortType;
+import pt.chequerefeicao.ws.UtilizadorInexistente;
+import pt.chequerefeicao.ws.UtilizadorInexistente_Exception;
+import pt.chequerefeicao.ws.ValorInvalido_Exception;
+import pt.chequerefeicao.ws.ValorInvalido;
+import pt.criptografiaServer.*;
+@WebService(
+	    endpointInterface="pt.chequerefeicao.ws.ChequeRefeicaoPortType",
+	    wsdlLocation="ChequeRefeicao.1_0.wsdl",
+	    name="ChequeRefeicaoPortType",
+	    portName="ChequeRefeicaoPort",
+	    targetNamespace="urn:pt:chequerefeicao:ws",
+	    serviceName="ChequeRefeicaoService"
+)
+
+public class ChequeRefeicaoImpl implements ChequeRefeicaoPortType{
+	
+	
+	@Override
+	public String emitir(String titular, int valor, boolean endossavel)
+			throws UtilizadorInexistente_Exception, ValorInvalido_Exception{
+		
+		
+		if(valor <= 0 ){
+			ValorInvalido faultInfo = new ValorInvalido();
+        	faultInfo.setMensagem("O valor " + valor + " tem de ser maior que 0.");
+        	faultInfo.setValor(valor);
+			throw new ValorInvalido_Exception(faultInfo.getMensagem(), faultInfo);
+		}
+		
+		String resultado = "";
+	
+		Statement stmt = null;
+		PreparedStatement stmt2 = null;
+		PreparedStatement stmt3 = null;
+		
+		
+		String maxID = "SELECT MAX(ID) AS ID FROM CHEQUE;";
+		String verifyTitular = "SELECT COUNT(*) AS CONTADOR FROM ENTIDADE WHERE NOME = " + titular;
+		String insert = "INSERT INTO CHEQUE (ID, TITULAR, VALOR, ENDOSSAVEL, USADO) VALUES(?,?,?,?,?)";
+		String insertKey = "INSERT INTO CHAVE (TITULAR, CHAVE) VALUES(?,?)";
+		
+		
+		try {
+			
+			Connection conn =  (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/root", "root", "rootroot");
+			stmt = (Statement) conn.createStatement();
+			ResultSet rs = stmt.executeQuery(maxID);
+			rs.next();
+						
+			
+			AsymCrypto idCheque = new AsymCrypto();
+			
+			idCheque.generateKeys();
+			
+			resultado = idCheque.getPubKey() + " " + idCheque.getPrivKey(); 
+			
+			
+			ResultSet rs2 = stmt.executeQuery(verifyTitular);
+			rs2.next();
+			
+			//  Verificar se utilizador existe; PERGUNTAR AO PROFESSOR
+			if(rs.getInt("CONTADOR") != 0){
+				UtilizadorInexistente faultInfo = new UtilizadorInexistente();
+	        	faultInfo.setMensagem("O titular " + titular + " nao existe.");
+	        	faultInfo.setUtilizador(titular);
+				throw new UtilizadorInexistente_Exception(faultInfo.getMensagem(), faultInfo);
+		        	
+			}
+			
+			
+			
+			stmt2 = (PreparedStatement) conn.prepareStatement(insert);
+	        stmt2.setString(1, resultado);
+	        stmt2.setString(2, titular);
+	        stmt2.setString(3, valor + "");
+	        if(endossavel){
+	        	stmt2.setString(4, "true");
+	        }else{
+	        	stmt2.setString(4, "false");
+	        }
+	        stmt2.setString(5, "nao");
+	        stmt2.executeUpdate();
+	        conn.close();
+	        
+	    } catch (SQLException e1) {
+	    	System.out.println("Erro SQL " + e1.getMessage());
+	        
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return resultado;
+	}
+
+	@Override
+	public Integer sacar(String beneficiario, List<String> numeros)
+			throws ChequeInexistente_Exception, ChequeJaUsado_Exception,
+			UtilizadorInexistente_Exception {
+		
+		int resultado = 0;
+		String verifyChequeIne;
+		String verifyChequeUsa;
+		String verifyBeneficiario;
+		String verifyPartilha;
+		String verifyUtilizador;
+		String queryValor;
+		String updateBD;
+		
+		Statement stmt = null;
+		
+		try{
+			
+			Connection conn =  (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/root", "root", "rootroot");
+			stmt = (Statement) conn.createStatement();
+			ResultSet rs;
+			ResultSet rs2;
+			ResultSet rs3;
+			ResultSet rs4;
+			ResultSet rs5;
+			ResultSet rs6;
+			ResultSet rs7;
+			
+			
+			
+			for (String item : numeros) {
+				
+				
+				verifyChequeIne = "SELECT COUNT(*) AS CONTADOR FROM CHEQUE WHERE ID = " + item;
+				verifyChequeUsa = "SELECT USADO FROM CHEQUE WHERE ID = " + item;
+				verifyBeneficiario = "SELECT TITULAR FROM CHEQUE WHERE ID = " + item;
+				verifyUtilizador = "SELECT COUNT(*) AS CONTADOR FROM ENTIDADE WHERE NOME = " + beneficiario;
+				verifyPartilha = "SELECT ID FROM PARTILHA WHERE ID = " + item + "AND DESTINO = " + beneficiario;
+				queryValor = "SELECT VALOR FROM CHEQUE WHERE ID = " + item;
+				updateBD = "UPDATE CHEQUE SET USADO = sim WHERE ID = " + item;
+				
+				rs = stmt.executeQuery(verifyChequeIne);
+				rs.next();
+				
+				if(rs.getInt("CONTADOR") == 0){
+					ChequeInexistente faultInfo = new ChequeInexistente();
+		        	faultInfo.setMensagem("O cheque com o numero " + item + " nao existe.");
+		        	faultInfo.setNr(item);
+					throw new ChequeInexistente_Exception(faultInfo.getMensagem(), faultInfo);
+					
+			        	
+				}
+				
+				rs7 = stmt.executeQuery(verifyUtilizador);
+				rs7.next();
+				
+				if(rs7.getInt("CONTADOR") == 0){
+					UtilizadorInexistente faultInfo = new UtilizadorInexistente();
+					faultInfo.setMensagem("O utilizador com o nome " + beneficiario + " nao existe.");
+					faultInfo.setUtilizador(beneficiario);
+					throw new UtilizadorInexistente_Exception(faultInfo.getMensagem(), faultInfo);
+				}
+				
+				rs2 = stmt.executeQuery(verifyChequeUsa);
+				rs2.next();
+				
+				if(rs2.getString("USADO") == "sim" ){
+					ChequeJaUsado faultInfo = new ChequeJaUsado();
+					faultInfo.setMensagem("O cheque com o numero " + item + "ja foi usado");
+					faultInfo.setNr(item);
+					throw new ChequeJaUsado_Exception(faultInfo.getMensagem(), faultInfo);
+				}
+				
+				rs4 = stmt.executeQuery(verifyBeneficiario);
+				rs4.next();
+				
+				if(rs4.getString("TITULAR") == beneficiario ){
+					
+					
+					rs3 = stmt.executeQuery(queryValor);
+					rs3.next();				
+				
+					resultado += rs3.getInt("VALOR");
+					stmt.executeQuery(updateBD);
+					
+				}else{
+					
+					rs5 = stmt.executeQuery(verifyPartilha);
+					rs5.next();
+					String aux = rs5.getString("ID");
+					
+					updateBD = "UPDATE CHEQUE SET USADO = sim WHERE ID = " + aux;
+					rs3 = stmt.executeQuery(updateBD);
+					
+					queryValor = "SELECT VALOR FROM CHEQUE WHERE ID = " + aux;
+					
+					rs6 = stmt.executeQuery(queryValor);
+					rs6.next();
+					resultado += rs6.getInt("VALOR");
+					
+					
+					
+				}
+				
+				
+			}
+			conn.close();
+		
+		
+		}catch (SQLException e1) {
+	    	System.out.println("Erro SQL " + e1.getMessage());
+		}
+		
+		return resultado;
+		
+	}
+
+	@Override
+	public String endossar(String titular, String terceiro, String numero)
+			throws ChequeInexistente_Exception, ChequeJaUsado_Exception,
+			ChequeNaoEndossavel_Exception, UtilizadorInexistente_Exception {
+		
+		Statement stmt = null;
+		PreparedStatement stmt2 = null;
+				
+		String verifyID = "SELECT COUNT(*) AS CONTADOR FROM CHEQUE WHERE ID = " + numero;
+		String verifyTitular = "SELECT COUNT(*) AS CONTADOR FROM ENTIDADE WHERE NOME = " + titular;
+		String verifyTerceiro = "SELECT COUNT(*) AS CONTADOR FROM ENTIDADE WHERE NOME = " + terceiro;
+		String queryID = "SELECT * FROM CHEQUE WHERE ID = " + numero;
+		String insert = "INSERT INTO PARTILHA (ID, TITULAR, DESTINO) VALUES(?,?,?)";
+		
+		
+		try{
+			Connection conn =  (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/root", "root", "rootroot");
+			stmt = (Statement) conn.createStatement();
+			ResultSet rs = stmt.executeQuery(verifyID);
+			rs.next();
+			if(rs.getInt("CONTADOR") == 0){
+				ChequeInexistente faultInfo = new ChequeInexistente();
+	        	faultInfo.setMensagem("O cheque com o numero " + numero + " nao existe.");
+	        	faultInfo.setNr(numero);
+				throw new ChequeInexistente_Exception(faultInfo.getMensagem(), faultInfo);
+				
+			}
+			
+			ResultSet rs1 = stmt.executeQuery(verifyTitular);
+			rs1.next();
+			
+			if(rs1.getInt("CONTADOR") == 0){
+				UtilizadorInexistente faultInfo = new UtilizadorInexistente();
+	        	faultInfo.setMensagem("O titular " + titular + " nao existe.");
+	        	faultInfo.setUtilizador(titular);
+				throw new UtilizadorInexistente_Exception(faultInfo.getMensagem(), faultInfo);
+				
+			}
+			
+			ResultSet rs3 = stmt.executeQuery(verifyTerceiro);
+			rs3.next();
+			
+			if(rs3.getInt("CONTADOR") == 0){
+				UtilizadorInexistente faultInfo = new UtilizadorInexistente();
+				faultInfo.setMensagem("O terceiro " + terceiro + "nao existe.");
+				faultInfo.setUtilizador(terceiro);
+				throw new UtilizadorInexistente_Exception(faultInfo.getMensagem(), faultInfo);
+			}
+			
+			ResultSet rs2 = stmt.executeQuery(queryID);
+			rs2.next();
+			
+			if(rs2.getString("USADO") == "sim" ){
+				ChequeJaUsado faultInfo = new ChequeJaUsado();
+				faultInfo.setMensagem("O cheque com o numero " + numero + "ja foi usado");
+				faultInfo.setNr(numero);
+				throw new ChequeJaUsado_Exception(faultInfo.getMensagem(), faultInfo);
+				
+			}
+			
+			if(rs2.getString("ENDOSSAVEL") == "nao"){
+				ChequeNaoEndossavel faultInfo = new ChequeNaoEndossavel();
+				faultInfo.setMensagem("O chque com o numero " + numero + " nao e endossavel");
+				faultInfo.setNr(numero);
+				
+			}
+			
+			stmt2 = (PreparedStatement) conn.prepareStatement(insert);
+	        stmt2.setString(1, numero);
+	        stmt2.setString(2, titular);
+	        stmt2.setString(3, terceiro);
+	        stmt2.executeUpdate();
+	        conn.close();			
+			
+			
+		}catch (SQLException e1) {
+	    	System.out.println("Erro SQL " + e1.getMessage());
+		}
+		
+		AsymCrypto ids2;
+		
+		try {
+			ids2 = new AsymCrypto();
+			ids2.generateKeys();
+
+		
+		String[] part = numero.split(" ");
+		String part1 = part[0];
+		String part2 = ids2.getPrivKey();
+		
+		numero = part1 + " " + part2;
+		
+
+		
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}		
+		
+		return numero;		
+	}
+
+	@Override
+	public List<String> listar(String titular, boolean sacados)
+			throws UtilizadorInexistente_Exception {
+		
+		List<String> lista= new ArrayList<String>();
+		Statement stmt = null;
+		
+		String verifyTitular = "SELECT COUNT(*) AS CONTADOR FROM ENTIDADE WHERE NOME = " + titular;
+		String queryTitular = "SELECT * FROM CHEQUE WHERE TITULAR = " + titular;
+		
+		try{
+			Connection conn =  (Connection) DriverManager.getConnection("jdbc:mysql://localhost:3306/root", "root", "rootroot");
+			stmt = (Statement) conn.createStatement();
+			ResultSet rs = stmt.executeQuery(verifyTitular);
+			ResultSet rs2;
+			rs.next();
+			
+			int contador = rs.getInt("CONTADOR");
+			
+			if(rs.getInt("CONTADOR") == 0){
+				UtilizadorInexistente faultInfo = new UtilizadorInexistente();
+	        	faultInfo.setMensagem("O titular " + titular + " nao existe.");
+	        	faultInfo.setUtilizador(titular);
+				throw new UtilizadorInexistente_Exception(faultInfo.getMensagem(), faultInfo);				
+			}
+			
+			rs2 = stmt.executeQuery(queryTitular);
+			rs2.next();
+			
+			for(int i = 0;i < contador; i++){
+							
+				if((sacados == true && rs2.getString("USADO") == "sim") || (sacados == false && rs2.getString("USADO") == "nao" ) ){
+					String part[] = rs2.getString("ID").split(" ");
+					lista.add(part[0]);
+				}
+				
+				rs2.next();	
+				
+			}
+			conn.close();
+			
+		}catch (SQLException e1) {
+	    	System.out.println("Erro SQL " + e1.getMessage());
+		}
+		
+		return lista;
+	}
+}

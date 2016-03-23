@@ -1,0 +1,182 @@
+package pt.criptografiaServer;
+
+//provides helper methods to print byte[]
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
+
+import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+
+
+/**
+* 	 Public key cryptography using the RSA algorithm.
+*/
+
+public class AsymCrypto {
+
+	
+	private String pubKey;
+
+	private String privKey;	
+	
+	private byte[] text;
+	
+	private KeyPair globalKeys;
+			
+	public AsymCrypto() throws NoSuchAlgorithmException {
+		
+	     SecureRandomNumber srn = new SecureRandomNumber();
+		 final String plainText = srn.getSecuredNumber();
+	     final byte[] plainBytes = plainText.getBytes();
+	     
+	     setText(plainBytes);
+	     
+	     // IMPRIME O ESTADO DO SISTEMA	     
+	     System.out.println("Text:");
+	     System.out.println(plainText);
+	     System.out.println("Bytes:");
+	     System.out.println(printHexBinary(plainBytes));    
+		
+	}
+	
+     
+
+
+
+	
+	public void generateKeys() throws NoSuchAlgorithmException
+	{
+	// GERA AS CHAVES!!!!!     
+	     
+	     // generate an RSA key
+	     System.out.println("Start generating RSA keys");
+	     KeyPairGenerator keyGen = KeyPairGenerator.getInstance("RSA");
+	     keyGen.initialize(1024);
+	     KeyPair keys = keyGen.generateKeyPair();
+	     System.out.println("Finish generating RSA keys");
+	     
+	     this.setGlobalKeys(keys);
+	     
+	  // CRIA CHAVE PRIVADA     
+	     System.out.println("Private Key:");
+	     System.out.println(printHexBinary(keys.getPrivate().getEncoded()));
+	     
+	     setPrivKey(printHexBinary(keys.getPrivate().getEncoded()));
+	     
+	     
+	  // CRIA CHAVE PUBLICA         
+	     System.out.println("Public Key:");
+	     System.out.println(printHexBinary(keys.getPublic().getEncoded()));
+	     
+	     setPubKey(printHexBinary(keys.getPublic().getEncoded()));    
+	
+	}     
+	     
+
+     
+     
+	     
+	private void setPrivKey(String printHexBinary) {
+		this.privKey = printHexBinary;
+		
+	}
+	
+	private void setPubKey(String printHexBinary) {
+		this.pubKey = printHexBinary;
+		
+	}
+
+
+	public String getPrivKey() {
+		return this.privKey;
+		
+	}
+	
+	public String getPubKey() {
+		return this.pubKey;
+		
+	}    
+     
+	public String Cypher (KeyPair key, byte[] plainBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	    	 
+		// ESCOLHE O ALGORITMO PARA ENCRIPTAR     
+	     // get an RSA cipher object and print the provider
+	     Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+	     System.out.println(cipher.getProvider().getInfo());
+	     
+	     
+	     
+	     System.out.println("Ciphering with public key ...");
+	     cipher.init(Cipher.ENCRYPT_MODE, key.getPublic());
+	     byte[] cipherBytes = cipher.doFinal(plainBytes);
+	
+	     System.out.println("Result:");
+	     System.out.println(printHexBinary(cipherBytes));
+	     
+	     return printHexBinary(cipherBytes);
+	}	
+     
+     
+	public String Decypher(KeyPair key, byte[] cipherBytes) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+ 
+		
+	     Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+	     System.out.println(cipher.getProvider().getInfo());		
+	     
+	     // decrypt the ciphertext using the private key
+	     System.out.println("Deciphering with private key ...");
+	     cipher.init(Cipher.DECRYPT_MODE, key.getPrivate());
+	     byte[] newPlainBytes = cipher.doFinal(cipherBytes);
+	     System.out.println("Result:");
+	     System.out.println(printHexBinary(newPlainBytes));
+	
+	     System.out.println("Text:");
+	     String newPlainText = new String(newPlainBytes); 
+	     System.out.println(newPlainText);
+		return newPlainText;
+	
+	}
+
+
+
+
+
+
+	public byte[] getText() {
+		return text;
+	}
+
+
+
+
+
+
+	public void setText(byte[] text) {
+		this.text = text;
+	}
+
+
+
+
+
+
+	public KeyPair getGlobalKeys() {
+		return globalKeys;
+	}
+
+
+
+
+
+
+	public void setGlobalKeys(KeyPair globalKeys) {
+		this.globalKeys = globalKeys;
+	}
+
+}

@@ -1,0 +1,69 @@
+Projecto de Sistemas Distribuídos
+
+Primeira entrega - 2014-05-14 - 20h
+
+Grupo de SD 18
+
+Repositório T-05-18-24
+
+José Paulo Martins Andrade 70451 pq.gn66@gmail.com
+Adilio Santos 70522 adilio-santos@hotmail.com 
+João Brás 70598 joaobras_123@hotmail.com
+
+
+-------------------------------------------------------------------------------
+
+Serviço Cheque Refeicao
+
+Instruções de instalação para Windows
+
+[1] Iniciar servidores
+
+JUDDI:
+> startup
+
+
+[2] Criar directoria de trabalho
+
+cd temp
+mkdir SD
+cd SD
+
+
+[3] Obter versão entregue
+
+svn co svn+ssh://ist170598@sigma.ist.utl.pt/afs/ist.utl.pt/groups/leic-es/svn/T-05-15-24/chequerefeicao-ws/tags/R_1 chequerefeicao-ws
+svn co svn+ssh://ist170598@sigma.ist.utl.pt/afs/ist.utl.pt/groups/leic-es/svn/T-05-15-24/chequerefeicao-ws-cli/tags/R_1_cli chequerefeicao-ws-cli
+
+
+[4] MySQL
+cd chequerefeicao-ws
+
+Alterar build.xml entre a linha 42 e a linha 49 e redifinir o utilizador e password para aceder à BD.
+
+[5] Construir e executar servidor
+
+cd chequerefeicao-ws
+ant build db-clean db-build run
+
+
+[6] Construir cliente
+
+[Abrir outra linha de comandos]
+
+cd registofatura-ws-cli
+ant build run
+
+
+-------------------------------------------------------------------------------
+
+Instruções de teste:
+(Como verificar que todas as funcionalidades estão a funcionar correctamente)
+
+
+[1] Ao executar o run no cliente como feito anteriormente, são testadas todas as respostas 
+	possiveis (incluindo os casos de erro) nos serviços disponiveis.
+
+
+-------------------------------------------------------------------------------
+FIM

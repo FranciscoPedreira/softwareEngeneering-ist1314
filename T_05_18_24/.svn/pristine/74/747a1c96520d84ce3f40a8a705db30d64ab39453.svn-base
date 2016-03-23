@@ -1,0 +1,43 @@
+package pt.criptografiaServer;
+
+//provides helper methods to print byte[]
+import static javax.xml.bind.DatatypeConverter.printHexBinary;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+
+/** 
+* 	Generate secure random numbers.
+*/
+public class SecureRandomNumber {
+	
+	private String securedNumber;
+
+ public SecureRandomNumber() throws NoSuchAlgorithmException
+ {
+
+     SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
+     System.out.println(random.getProvider().getInfo());
+
+     System.out.println("Generating random byte array ...");
+
+     final byte array[] = new byte[16];
+     random.nextBytes(array);
+
+     System.out.println("Results:");
+     System.out.println(printHexBinary(array));
+     
+     securedNumber = printHexBinary(array);
+     
+     this.setSecuredNumber(securedNumber);
+ }
+
+public String getSecuredNumber() {
+	return securedNumber;
+}
+
+public void setSecuredNumber(String securedNumber) {
+	this.securedNumber = securedNumber;
+}
+
+}

@@ -1,0 +1,156 @@
+package chequerefeicao.client;
+
+
+import static javax.xml.ws.BindingProvider.ENDPOINT_ADDRESS_PROPERTY;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.ws.BindingProvider;
+
+import pt.chequerefeicao.ws.*;
+
+public class ChequeRefeicao {
+	
+	
+    public static void main(String[] args) throws IOException {
+
+    	ChequeRefeicaoService service = new ChequeRefeicaoService();
+    	ChequeRefeicaoPortType port = service.getChequeRefeicaoPort();
+    	
+    	BindingProvider bindingProvider = (BindingProvider) port;
+        Map<String, Object> requestContext = bindingProvider.getRequestContext();
+        
+
+        String url = args[0];
+        requestContext.put(ENDPOINT_ADDRESS_PROPERTY, url);
+        System.out.printf("Remote call to %s ...%n", url);
+      
+        
+		try {
+			
+        	//Teste emitir
+			System.out.println("Teste1: Emitir cheque correctamente:");
+			String e1 = port.emitir("Yoda", 1, true);
+			System.out.println("Emitir id: " + e1 + "\n" + "Emitir valor: 1");
+
+		} catch (UtilizadorInexistente_Exception e1) {
+			System.out.println("ERRO: Teste1: Emitir cheque correctamente falhou");
+		} catch (ValorInvalido_Exception e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}        
+        
+        
+		try {
+			
+			System.out.println("Teste2: Emitir - Espacos:");
+			String e2 = port.emitir("Yod a", 1, true);
+			System.out.println("Emitir id: " + e2 + "\n" + "Emitir valor: 1");
+
+		} catch (UtilizadorInexistente_Exception e1) {
+			System.out.println("ERRO: Teste2: Emitir cheque. Espaços invalidos");
+		} catch (ValorInvalido_Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}                
+        
+		try {
+			
+        	//Teste emiti3 valor maior que zero
+			String e3 = port.emitir("Yoda", 0, true);
+			System.out.println("Emitir id: " + e3 + "\n" + "Emitir valor: 0");
+
+		} catch (ValorInvalido_Exception e3) {
+			System.out.println("ERRO: Teste3: Emitir cheque. Valor nulo");
+		} catch (UtilizadorInexistente_Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}                     
+     
+        
+		//A resposta normal da operação 'emitir'
+       // devolve o número do cheque de refeição emitido.
+		
+		
+		try {
+			
+        	//Teste sacar0  valor nulo
+			System.out.println("Teste4: Sacar nulo");
+			List<String> lista = new ArrayList<String>();
+			lista.add("1");
+			int s = port.sacar("Dark Vader", lista);
+			System.out.println("Sacar Benificiario: Dark Vader" + "valor " + s);
+
+		} catch (UtilizadorInexistente_Exception e1) {
+			System.out.println("ERRO: Teste4: Falha no Sacar deve ser nulo");
+		} catch (ChequeInexistente_Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ChequeJaUsado_Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}                     
+     		
+		
+		
+
+		try {
+			
+        	//Teste listar0  valor nulo
+			System.out.println("Teste6: Listar nulo");
+			List<String> l = port.listar("Luke", true);
+
+			for(String s : l)
+				System.out.println(s);
+			
+		} catch (UtilizadorInexistente_Exception e1) {
+			System.out.println("ERRO: Teste6: Falha no Listar deve ser nulo");
+		}    		
+		
+
+		try {
+			
+        	//Teste endossar0  nulo
+			System.out.println("Teste8: Endossar nulo");
+			String s = port.endossar("Leia", "Skywalker", "123");
+
+			System.out.println("Utilizador: Leia, Terceiro: Skywalker, Numero: 123, Valor: " + s);
+			
+		} catch (UtilizadorInexistente_Exception e1) {
+			System.out.println("ERRO: Teste8: Falha no Endossar deve ser nulo");
+		} catch (ChequeInexistente_Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ChequeJaUsado_Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ChequeNaoEndossavel_Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  		
+		
+		try {
+			
+        	//Teste endossar1 correctmente
+			System.out.println("Teste9: Endossar correctmente");
+			Endossar en2 = new Endossar();
+			en2.setTitular("Luke Skywalker");
+			en2.setTerceiro("Jedi");
+			en2.setNumero("03");			
+			System.out.println("Endossar Titular: " + en2.getTitular());
+			System.out.println("Endossar Titular: " + en2.getTerceiro());
+			System.out.println("Endossar Titular: " + en2.getNumero());
+
+		} catch (Exception e1) {
+			System.out.println("ERRO: Teste8: Falha no Endossar correctmente");
+		}  			
+				
+		
+		
+    }
+	
+
+}

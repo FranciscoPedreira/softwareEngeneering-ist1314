@@ -1,0 +1,131 @@
+package pt.ist.rest.domain;
+
+class PortalRestaurante;
+
+class Utilizador {
+	String nome;
+	String userName;
+	String password;
+}
+
+class Cliente extends Utilizador {
+	String morada;
+	String email;
+	int nif;
+}
+
+class Gestor extends Utilizador;
+
+class Restaurante {
+	String nome;
+	String morada;
+	float classificacao;
+}
+
+class Prato {
+	String nome;
+	double preco;
+	int calorias;
+	int id;
+}
+
+class Alimento {
+	String nome;
+}
+
+class Peixe extends Alimento;
+
+class Carne extends Alimento;
+
+class Vegetariano extends Alimento;
+
+class Compra{
+	boolean pago;
+	double totalPagar;	
+}
+
+class Quantidade{
+	int quantidade;
+}
+
+
+relation PortalRestauranteContainsUtilizador {
+	PortalRestaurante playsRole portalRestaurante {
+		multiplicity 1;
+	}
+	Utilizador playsRole utilizador {
+		multiplicity *;
+	}	
+}
+
+relation PortalRestauranteContainsRestaurante {
+	PortalRestaurante playsRole portalRestaurante {
+		multiplicity 1;
+	}
+	Restaurante playsRole restaurante {
+		multiplicity *;
+	}
+}
+
+relation RestauranteContainsPrato {
+	Restaurante playsRole restaurante {
+		multiplicity 1;
+	}
+	Prato playsRole prato {
+		multiplicity 0..15;
+	}
+}
+
+relation PratoContainsAlimento {
+	Prato playsRole prato {
+		multiplicity 1;
+	}
+	Alimento playsRole alimento {
+		multiplicity *;
+	}
+}
+
+relation RestauranteContainsGestor {
+	Restaurante playsRole restaurante {
+		multiplicity 1;
+	}
+	Gestor playsRole gestor {
+		multiplicity 1..*;
+	}
+}
+
+relation ClienteContainsPrato {
+	Cliente playsRole cliente {
+		multiplicity *;
+	}
+	Prato playsRole prato {
+		multiplicity 0..15;
+	}
+}
+
+relation ClienteContainsCompra {
+	Cliente playsRole cliente {
+		multiplicity 1;
+	}
+	Compra playsRole compra {
+		multiplicity *;
+	}
+}
+
+relation PratoContainsQuantidade {
+	Prato playsRole prato {
+		multiplicity 1;
+	}
+	Quantidade playsRole quantidade {
+		multiplicity *;
+	}
+}
+
+relation CompraContainsPrato {
+	Compra playsRole compra {
+		multiplicity 1;
+	}
+	Prato playsRole prato {
+		multiplicity 1..*;
+	}
+}
